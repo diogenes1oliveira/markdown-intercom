@@ -1,0 +1,1 @@
+Ok, that worked! Now, I give you permission to glance at the files: but just to look for a CHAT.md here. I want you to dump this conversation of ours into mdi/THREAD.md; in the exact format of that example: the timestamps I'm the human, you're the bot, etc
