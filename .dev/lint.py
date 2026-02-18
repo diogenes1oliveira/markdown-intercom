@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 """
-Lint YAML and Markdown files.
-Usage: lint.py --format markdown|yaml [--fix] [--any] <glob1> <glob2> ...
+Lint YAML and Markdown files, or build and check mkdocs site.
+Usage: lint.py --format markdown|yaml|docs [--fix] [--any] <glob1> <glob2> ...
 """
 
 import argparse
@@ -10,8 +10,11 @@ import glob
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import List, Set
+
+import pathspec
 
 
 def log(level: str, message: str) -> None:
@@ -37,6 +40,35 @@ def find_repo_root(start_dir: Path) -> Path:
             return current
         current = current.parent
     return start_dir
+
+
+def load_markdownlint_ignore(repo_root: Path) -> pathspec.PathSpec:
+    """Load ignore patterns from .markdownlintignore file."""
+    ignore_file = repo_root / '.markdownlintignore'
+    if not ignore_file.exists():
+        return pathspec.PathSpec.from_lines('gitwildmatch', [])
+    
+    with open(ignore_file, 'r') as f:
+        lines = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
+    
+    return pathspec.PathSpec.from_lines('gitwildmatch', lines)
+
+
+def should_ignore_file(file_path: Path, ignore_spec: pathspec.PathSpec, repo_root: Path) -> bool:
+    """Check if a file should be ignored based on ignore patterns."""
+    if not ignore_spec or not ignore_spec.patterns:
+        return False
+    
+    # Convert to relative path from repo root for pattern matching
+    try:
+        rel_path = file_path.relative_to(repo_root)
+        rel_path_str = str(rel_path).replace('\\', '/')  # Normalize separators
+    except ValueError:
+        # File is outside repo root, don't ignore
+        return False
+    
+    # pathspec expects paths relative to repo root with forward slashes
+    return ignore_spec.match_file(rel_path_str)
 
 
 def expand_globs_with_git(globs: List[str]) -> Set[Path]:
@@ -125,8 +157,13 @@ def expand_globs_with_find(globs: List[str]) -> Set[Path]:
     return files
 
 
-def run_markdown_lint(file_path: Path, fix: bool, repo_root: Path) -> bool:
+def run_markdown_lint(file_path: Path, fix: bool, repo_root: Path, ignore_spec: pathspec.PathSpec = None) -> bool:
     """Run markdownlint on a file."""
+    # Check if file should be ignored
+    if ignore_spec and should_ignore_file(file_path, ignore_spec, repo_root):
+        log('INFO', f'Skipping ignored file: {file_path}')
+        return True
+    
     log('INFO', f'Linting markdown: {file_path}')
     
     config_arg = []
@@ -192,19 +229,101 @@ def run_yaml_lint(file_path: Path) -> bool:
             return False
 
 
-def lint_file(file_path: Path, format_type: str, fix: bool, repo_root: Path) -> bool:
+def lint_file(file_path: Path, format_type: str, fix: bool, repo_root: Path, ignore_spec: pathspec.PathSpec = None) -> bool:
     """Lint a single file."""
     if not file_path.is_file():
         log('ERROR', f'File not found: {file_path}')
         return False
     
     if format_type == 'markdown':
-        return run_markdown_lint(file_path, fix, repo_root)
+        return run_markdown_lint(file_path, fix, repo_root, ignore_spec)
     elif format_type == 'yaml':
         return run_yaml_lint(file_path)
     else:
         log('ERROR', f'Invalid format: {format_type}')
         return False
+
+
+def run_docs_lint(repo_root: Path) -> bool:
+    """Build mkdocs site and check for errors (missing links, navs, etc.)."""
+    log('INFO', 'Building mkdocs site to check for errors...')
+    
+    # Create temporary directory for build output
+    with tempfile.TemporaryDirectory() as tmpdir:
+        build_dir = Path(tmpdir) / 'site'
+        
+        # Check if mkdocs.yml exists
+        mkdocs_yml = repo_root / 'mkdocs.yml'
+        if not mkdocs_yml.exists():
+            log('ERROR', f'mkdocs.yml not found at {mkdocs_yml}')
+            return False
+        
+        # Try to build with mkdocs
+        try:
+            # First check if uv is available
+            result = subprocess.run(
+                ['uv', 'run', 'mkdocs', 'build', '--site-dir', str(build_dir)],
+                cwd=str(repo_root),
+                capture_output=True,
+                text=True,
+                timeout=300  # 5 minute timeout
+            )
+            
+            if result.returncode != 0:
+                log('ERROR', 'mkdocs build failed')
+                if result.stdout:
+                    print(result.stdout, end='')
+                if result.stderr:
+                    print(result.stderr, end='', file=sys.stderr)
+                return False
+            
+            # Parse output for warnings/errors
+            output = result.stdout + result.stderr
+            errors_found = False
+            
+            # Check for common mkdocs errors
+            error_patterns = [
+                ('WARNING', 'WARNING'),
+                ('ERROR', 'ERROR'),
+                ('not found', 'Missing file'),
+                ('broken link', 'Broken link'),
+                ('invalid', 'Invalid'),
+            ]
+            
+            for pattern, label in error_patterns:
+                if pattern.lower() in output.lower():
+                    # Extract relevant lines
+                    lines = output.split('\n')
+                    for i, line in enumerate(lines):
+                        if pattern.lower() in line.lower():
+                            # Show context (3 lines before and after)
+                            start = max(0, i - 3)
+                            end = min(len(lines), i + 4)
+                            context = '\n'.join(lines[start:end])
+                            log('ERROR', f'{label} found:\n{context}')
+                            errors_found = True
+            
+            # Check for missing nav items
+            if 'not found in the documentation' in output.lower():
+                log('ERROR', 'Missing navigation items detected')
+                errors_found = True
+            
+            if errors_found:
+                log('ERROR', 'mkdocs build completed but errors were found')
+                return False
+            
+            log('SUCCESS', 'mkdocs build completed successfully with no errors')
+            return True
+            
+        except FileNotFoundError:
+            log('ERROR', 'uv not found. Please install uv: https://github.com/astral-sh/uv')
+            return False
+        except subprocess.TimeoutExpired:
+            log('ERROR', 'mkdocs build timed out after 5 minutes')
+            return False
+        except Exception as e:
+            log('ERROR', f'Unexpected error building mkdocs: {e}')
+            return False
 
 
 def main():
@@ -217,14 +336,15 @@ Examples:
   lint.py --format markdown --fix "docs/**/*.md"
   lint.py --format yaml "*.yml" "*.yaml"
   lint.py --format markdown --any "*.md"  # Include gitignored files
+  lint.py --format docs  # Build and check mkdocs site
         """
     )
     
     parser.add_argument(
         '--format',
         required=True,
-        choices=['markdown', 'yaml'],
-        help='File format to lint'
+        choices=['markdown', 'yaml', 'docs'],
+        help='File format to lint (markdown/yaml) or docs to build and check mkdocs site'
     )
     parser.add_argument(
         '--fix',
@@ -237,19 +357,39 @@ Examples:
         help='Include gitignored files (default: only tracked files)'
     )
     parser.add_argument(
+        '--debug-ignore',
+        action='store_true',
+        help='Print files that match ignore patterns (for debugging)'
+    )
+    parser.add_argument(
         'globs',
-        nargs='+',
-        help='One or more glob patterns (e.g., "*.md", "docs/**/*.yml")'
+        nargs='*',
+        help='One or more glob patterns (e.g., "*.md", "docs/**/*.yml"). Not used for docs format.'
     )
     
     args = parser.parse_args()
     
-    if args.fix and args.format == 'yaml':
-        log('WARN', 'YAML fix not implemented, only checking')
-    
     # Find repo root
     script_dir = Path(__file__).parent
     repo_root = find_repo_root(script_dir)
+    
+    # Handle docs format separately
+    if args.format == 'docs':
+        if args.fix:
+            log('WARN', '--fix not applicable to docs format')
+        if args.any:
+            log('WARN', '--any not applicable to docs format')
+        if args.globs:
+            log('WARN', 'Glob patterns not used for docs format, ignoring')
+        return 0 if run_docs_lint(repo_root) else 1
+    
+    # Handle markdown/yaml formats
+    if args.fix and args.format == 'yaml':
+        log('WARN', 'YAML fix not implemented, only checking')
+    
+    if not args.globs:
+        log('ERROR', 'At least one glob pattern required for markdown/yaml format')
+        return 1
     
     # Expand globs
     if args.any:
@@ -261,11 +401,29 @@ Examples:
         log('WARN', f'No files found matching glob patterns: {", ".join(args.globs)}')
         return 0
     
+    # Load ignore patterns if needed
+    ignore_spec = None
+    if args.format == 'markdown':
+        ignore_spec = load_markdownlint_ignore(repo_root)
+        if args.debug_ignore:
+            log('INFO', f'Ignore patterns loaded: {len(ignore_spec.patterns)} patterns')
+    
     # Lint all files
     failed = False
+    ignored_count = 0
     for file_path in sorted(files):
-        if not lint_file(file_path, args.format, args.fix, repo_root):
+        # Debug ignore matching
+        if args.debug_ignore and args.format == 'markdown' and ignore_spec:
+            if should_ignore_file(file_path, ignore_spec, repo_root):
+                log('DEBUG', f'IGNORED: {file_path}')
+                ignored_count += 1
+                continue
+        
+        if not lint_file(file_path, args.format, args.fix, repo_root, ignore_spec):
             failed = True
+    
+    if args.debug_ignore:
+        log('INFO', f'Total files ignored: {ignored_count}')
     
     if not failed:
         log('SUCCESS', 'All checks passed')

@@ -37,15 +37,4 @@ Agents can communicate through:
 
 The protocol is transport-agnostic: agents only need to read and write markdown files. The storage backend (local, Git, HTTP, etc.) is an implementation detail handled by the agent's environment.
 
-## Documentation
-
-- [Development Guide](docs/DEVELOPMENT.md) - Setup instructions and development workflow
-- [Architecture](docs/ARCHITECTURE.md) - Technical architecture details
-- [Examples](docs/examples/index.md) - Example implementations
-
-## Quick Start
-
-1. Install dependencies: `uv sync`
-2. Setup IDE tools: `just setup` (optional)
-3. Serve documentation: `just dev`
-4. Build documentation: `just build`
+For technical architecture details, see [ARCHITECTURE.md](ARCHITECTURE.md).

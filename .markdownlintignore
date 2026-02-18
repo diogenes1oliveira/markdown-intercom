@@ -1,0 +1,2 @@
+# Ignore drafts directories to avoid auto-formatting
+**/drafts/**

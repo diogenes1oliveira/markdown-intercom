@@ -1,0 +1,69 @@
+site_name: Markdown Intercom
+site_description: Agents talking through Markdown
+site_author: Diógenes Oliveira
+site_url: https://diogenes1oliveira.github.io/markdown-intercom/
+
+nav:
+  - Home: index.md
+  - Architecture: ARCHITECTURE.md
+  - Examples:
+      - Index: examples/index.md
+      - Fix Apt Update Warning: examples/fix-apt-update-warning/README.md
+      - Scaffold MkDocs: examples/scaffold-mkdocs/README.md
+
+plugins:
+  - search
+  - section-index
+  - privacy
+  - tags
+  - gen-files:
+      scripts:
+        - src/mkdocs_customize/gen_pages.py
+
+extra_javascript:
+  - https://unpkg.com/mermaid@11/dist/mermaid.min.js
+  - javascripts/mermaid-init.js
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - mdx_outline

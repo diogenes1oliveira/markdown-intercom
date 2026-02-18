@@ -1,0 +1,20 @@
+---
+description: Python coding preferences and standards
+globs: **/*.py
+alwaysApply: false
+---
+
+# Python Coding Preferences
+
+- To check out unused imports, use ruff when requested. No need to run it all the time though at each step;
+- IMPORTANT: whatever you need to run some Python command, always use `uv`: `uv run pytest`, `uv run python some_adhoc_script.py`, etc;
+- When generating docstrings, follow the Google style. But keep them brief and only add those for public methods. Don't add the types, they're already in the type annotations.
+- Run mypy after generating code and fix the issues accordingly. Only add the type: ignore comments if really necessary.
+- Prefer simple, direct implementations over complex class hierarchies;
+- Don't modify existing files beyond what's needed for the specific request;
+- Don't add extensive documentation, error handling, or configuration unless asked;
+- Prefer the full form from importing modules; only use the relative .submodule in the `__init__.py`;
+- Import the `dataclasses` module and decorate with `@dataclasses.dataclass`;
+- If a types stub is available, you should always try to install it;
+- No need for re-exporting stuff in the `__init__.py`;
+- When adding tests, mirror the main package submodule structure. Also, always add the intermediate `__init__.py`;

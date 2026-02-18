@@ -1,0 +1,15 @@
+---
+description: General development guidelines for the harder-video-drives project
+alwaysApply: true
+---
+
+# General Guidelines
+
+1. **Keep it simple**: Only implement what is explicitly requested;
+2. **Don't over-engineer**: Avoid creating complex abstractions unless specifically asked;
+3. **Stay focused**: Don't add extra features, integrations, or "improvements" beyond the request;
+4. **Ask before expanding**: If you think something might be useful, ask first rather than implementing it;
+5. **Don't get stuck in a loop**: If you have to do too much back and forth changing and experimenting, stop and ask me. Likely there's some architectural problem;
+6. **Always keep type safety**: Add type annotations to all of the code you generate. Check those type annotations before generating code that calls existing code;
+7. **Don't guess how to invoke external libraries**: you are to check in the relevant file in `.venv/bin` how to invoke those, which arguments, the types and so on they expect and so on. Also look up in the Web context, if needed, for the project documentation, overview in a github repo, some relevant issue or comment...
+8. **Use coderag for codebase search**: When searching this repo for code (e.g. where something is defined, how something works), use the coderag tool instead of the built-in semantic search or grep.

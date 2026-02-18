@@ -1,41 +1,65 @@
-# Protocol
+# Development Guide
 
-## Markdown and YAML Linting
+This document describes the structure and purpose of files in this example.
 
-After generating or modifying markdown or YAML files, always run the linting script:
+## Main Documentation
 
-```bash
-../../.dev/lint.py --format markdown [--fix] [--any] <glob1> <glob2> ...
-../../.dev/lint.py --format yaml [--any] <glob1> <glob2> ...
-```
+- [`README.md`](README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/README.md) - User-friendly overview of the example with links to hive-like table structures and main contents
+- [`index.md`](index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/index.md) - Technical index table listing all markdown files with relative and GitHub paths
 
-Or use the Justfile recipe from the repo root:
+## Protocol and Agent Documentation
 
-```bash
-just lint          # Lint all tracked markdown files
-just lint fix=1    # Lint and fix all tracked markdown files
-just lint any=1    # Include gitignored files
-```
+- [`PROTOCOL.md`](PROTOCOL.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/PROTOCOL.md) - Communication protocol and guidelines for this example
+- [`AGENTS.md`](AGENTS.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/AGENTS.md) - Instructions for agents working with this example
+- [`ONBOARDING.md`](ONBOARDING.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/ONBOARDING.md) - Onboarding guide for new agents joining this example
+- [`SLIPUPs.md`](SLIPUPs.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/SLIPUPs.md) - Log of mistakes and learnings specific to this example
 
-The script:
+## Conversation Thread
 
-- Requires `--format markdown|yaml` parameter
-- Accepts glob patterns (e.g., `"*.md"`, `"docs/**/*.md"`)
-- By default, only lints tracked files (uses `git ls-files`)
-- Use `--any` flag to include gitignored files
-- Uses `markdownlint-cli` for markdown files (with `.markdownlint.json` config from repo root)
-- Uses `yamllint` or `npx yaml-lint` for YAML files
-- Supports `--fix` flag to automatically fix markdown issues where possible (YAML fix not implemented)
+- [`THREAD.md`](THREAD.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/THREAD.md) - Complete conversation thread showing the turn-based interaction between user and agent scaffolding the mkdocs website
 
-**Important:** Always run the linting script at the end of any response that generates or modifies markdown or YAML files.
+## Message Structure
 
-## Example-Specific Guidelines
+### Messages Directory
 
-This example demonstrates scaffolding mkdocs projects using the markdown-intercom protocol. Follow these guidelines:
+- [`messages/README.md`](messages/README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/messages/README.md) - User-friendly overview of the messages directory
+- [`messages/index.md`](messages/index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/messages/index.md) - Technical table of all messages organized by turn
 
-1. **Check existing structure** - Before creating files, search for existing hive-style partitions or directory structures
-2. **Use consistent naming** - Follow established naming conventions (e.g., `a.user.00N.md`, `b.bot.00N.md` for messages)
-3. **Create index.md files** - For technical tables, create `index.md` files with just the tables (no headers)
-4. **Create README.md files** - For user-friendly navigation, create `README.md` files that link to `index.md`
-5. **Dual links** - Include both relative paths and GitHub repo paths in links: `[text](relative) / [GitHub](github-url)`
-6. **Run linting** - Always run linting on generated files before completing the response
+### Turn Directories
+
+Each turn directory (`turn=1/`, `turn=2/`) contains:
+
+- `README.md` - User-friendly overview with links to messages
+- `index.md` - Technical table listing messages in that turn
+- `a.user.00N.md` - User message files (verbatim from THREAD.md)
+- `b.bot.00N.md` - Bot message files (verbatim from THREAD.md)
+
+## Inbox Structure
+
+### Inbox Directory
+
+- [`inbox/README.md`](inbox/README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/inbox/README.md) - Overview of the inbox example
+- [`inbox/index.md`](inbox/index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/inbox/index.md) - Technical table of inbox messages
+- [`inbox/main.md`](inbox/main.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/inbox/main.md) - Simulated inbox state showing the append-only write-ahead log format
+
+### Drafts Directory
+
+- [`inbox/drafts/README.md`](inbox/drafts/README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/inbox/drafts/README.md) - Overview of draft messages structure
+
+Drafts are organized using hive-style partitioning:
+
+- `agent=human/` - Human agent drafts
+- `agent=bot/` - Bot agent drafts
+
+Each agent directory contains turn directories (`turn=1/`, `turn=2/`, etc.), and each turn contains message directories (`message=1/`, `message=2/`, etc.) with:
+
+- `message.md` - Full draft message with metadata
+- `content.md` - Message content verbatim from THREAD.md
+- `summary.md` - Impersonal summary of the message
+- `README.md` - Directory index with links
+
+## Related
+
+- [Examples Root](../README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/README.md) - Examples directory
+- [Project Root](https://github.com/diogenes1oliveira/markdown-intercom) - Main project repository
+- [Architecture](../../ARCHITECTURE.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/ARCHITECTURE.md) - Technical architecture details

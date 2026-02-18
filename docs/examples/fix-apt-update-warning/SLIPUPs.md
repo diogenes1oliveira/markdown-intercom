@@ -49,13 +49,15 @@ When making stylistic or naming decisions that affect user-visible files, always
 **What happened:**  
 After generating multiple markdown files (index.md, README.md files, etc.), the agent did not run the linting script to verify and fix markdown syntax issues.
 
-**What should have been done:**  
+**What should have been done:**
+
 1. After generating or modifying any markdown files, always run `.dev/verify-channel.sh --fix` on those files
 2. The script uses `.markdownlint.json` config from the repo root
 3. Apply fixes automatically where possible using the `--fix` flag
 4. Document this requirement in PROTOCOL.md
 
-**Fix applied:**  
+**Fix applied:**
+
 - Copied `verify-channel.sh` to `.dev/verify-channel.sh`
 - Added missing `run_markdown_lint` function to the script
 - Updated script to use `.markdownlint.json` config from repo root
@@ -73,13 +75,15 @@ Always run `.dev/verify-channel.sh --fix` on all generated markdown files at the
 **What happened:**  
 The Justfile was made complex with inline bash logic instead of keeping it simple and delegating to scripts in `.dev/`.
 
-**What should have been done:**  
+**What should have been done:**
+
 1. Keep Justfile simple - it should just invoke commands in `.dev/`
 2. Put complex logic in `.dev/` scripts
 3. Scripts should accept clear parameters (e.g., `--format markdown|yaml` and file paths)
 4. Justfile recipes should be thin wrappers that call `.dev/` scripts
 
-**Fix applied:**  
+**Fix applied:**
+
 - Renamed `verify-channel.sh` to `lint.sh`
 - Refactored `lint.sh` to accept mandatory `--format markdown|yaml` parameter and list of file paths
 - Simplified Justfile to just invoke `.dev/lint.sh` with appropriate arguments

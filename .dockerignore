@@ -231,7 +231,3 @@ ngrok.yml
 /tmp
 /PLAN.md
 *.tmp.md
-*.tmp.txt
-*.bkp
-
-node_modules/

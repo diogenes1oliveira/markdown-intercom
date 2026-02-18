@@ -1,0 +1,60 @@
+---
+description: Active context and onboarding rules for the current experiment
+globs:
+alwaysApply: true
+---
+
+# Onboarding — what a new agent needs to understand
+
+Notes from `@notifier-implementator` joining `adhoc/SESSIONS001.md` at Turn #14.
+
+## The communication model
+
+This project uses **markdown files as a chat interface**. **New agents (GUI or CLI) enter the conversation through chat.md** — there is no separate entry point. The human (or another agent) writes requests in `chat.md` (the main channel) or in adhoc session files (`adhoc/SESSIONSXXX.md`), then triggers a read (e.g. “read the chat.md file again”). The bot reads the file, finds the last request, and responds by editing the same file. **Every new turn is committed to Git** (the git block at the end of each response); the conversation history is the Git history of chat.md.
+
+There is no API, no websocket, no HTTP — just files, git, and the chat.md interface for all agents.
+
+## Files I had to read (and why)
+
+| File                         | Why it matters                                                                                                                                                                                                  |
+| :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md`                  | Rules for the bot: commit messages, BOT/USER/DIFF.md protocol, turn numbering, shell verification, no shortcuts without warning, outline-before-code, etc.                                                      |
+| `PROTOCOL.md`                | How turns work: request/response structure, end-of-response blocks (INFO, git command, scaffolding), timestamps, the `---` separator convention.                                                                |
+| `chat.md`                    | The main channel — 16 turns of conversation. Covers the full history: from negotiating the protocol (Turns #1–#3), to building scripts (Turns #4–#14), to testing `notify-original-channel.sh` (Turns #15–#16). |
+| `adhoc/SESSIONS001.md`       | The session I joined — 13 turns between `@human` and `@my-first-adhoc` exploring CLI-to-chat messaging and OTel trace modeling.                                                                                 |
+| `README.md`                  | Short overview of the folder: what's here, quick usage, links to protocol and agents docs.                                                                                                                      |
+| `DEVELOPMENT.md`             | Cursor agent CLI allowlist, git aliases (`git ci`, `git ac`), adhoc session format (participants table, turn markers).                                                                                          |
+| `OPENTELEMETRY.md`           | How this project models chat sessions as distributed traces (actor model, span schema, saga pattern).                                                                                                           |
+| `SLIPUPs.md`                 | Log of mistakes the bot made: missed commit messages, syntax errors in scripts, clipboard-only shortcut, missing timestamps. Essential reading to avoid repeating them.                                         |
+| `.TASKS.md`                  | Task tracking from Requests #11–#12 (all marked done).                                                                                                                                                          |
+| `CI.md`                      | Bats test documentation — what each test file covers, how to run, last results.                                                                                                                                 |
+| `notify-original-channel.sh` | The script I'm responsible for. Three strategies: clipboard, cursor-agent, notify.                                                                                                                              |
+
+## Key rules I internalized
+
+1. **Enter through chat.md.** New agents (GUI or CLI) enter the conversation only through the chat.md interface. Every new turn is committed to Git (one commit per turn).
+2. **The channel is chat.md.** The _conversation content_ lives there (you read and edit it). Adhoc sessions are separate files in `adhoc/`. **If you run as a CLI agent:** you must still print to the terminal — e.g. brief status ("Reading chat.md…", "Responding…", "Done. Run the git block to commit.") or errors — so the user sees activity; do not stay silent.
+3. **Turn numbers must be consistent** across the whole file — as if rendered on a webpage.
+4. **BOT.md = exact bot response. USER.md = exact user request.** No summarization.
+5. **Always list all changed files** in the git block at the end of a response.
+6. **No shortcuts without warning.** If the request implies a real integration (e.g. "talk directly to the chat"), don't silently substitute clipboard-only. Research and report options; update SLIPUPs if you slip.
+7. **Outline before coding.** Document global working, inputs/outputs, pre/postconditions before changing code. Use `verify-shell-script.sh` and `bash -n` before suggesting scripts.
+8. **Prefer well-known libraries** for non-trivial work. Bash is glue; invoke standalone commands.
+9. **Disable auto-format** for Markdown and YAML in the editor. Enable auto-save on focus change.
+10. **CLI agents: print to the terminal.** Do not stay silent. Emit brief status (e.g. "Reading chat.md…", "Done. Run the git block to commit.") or errors to stdout/stderr so the user sees activity.
+11. **Two levels of auto-commit:** **Backup** = commit only the channel (chat.md, BOT.md, USER.md, DIFF.md). **Edit** = commit channel + all code/other files you changed this turn. Ask which level (and whether to run) before committing.
+12. **"Here" / "in this exp" = this folder.** When the user says "add X here" or "in this exp", they mean the channel directory (the folder with chat.md), not the repo root. See SLIPUPs #12.
+
+## What I understood about the notify problem
+
+The original question (SESSIONS001.md Turn #1): "How do I send a message from CLI into Cursor's GUI chat?"
+
+**Answer so far: you can't cleanly.** The GUI chat has no public API or socket for injection. The workarounds:
+
+- `cursor agent` CLI — works, but it's a **separate agent session**, not the GUI chat. Needs `--trust` for non-interactive use. Auth required (`cursor agent login`).
+- Clipboard + paste — works, but manual.
+- `notify-send` — shows a desktop notification reminding the user to paste, but still manual.
+- xdotool/xclip — fragile, X11 only, requires the chat input to be focused.
+- File polling — the bot watches a file, but you still need to trigger a read somehow.
+
+**Unsolved:** Injecting into the Electron/IDE GUI chat window programmatically. Possible directions: Chat Participant API extension, MCP server, file-based trigger with a custom extension, or reverse-engineering the IPC/websocket the IDE uses internally.
