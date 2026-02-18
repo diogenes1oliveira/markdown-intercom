@@ -1,0 +1,10 @@
+set dotenv-load := true
+
+default:
+    just --list
+
+# Set up the dev environment
+[group('dev')]
+setup:
+    ln -s ../../main.go .
+    go mod tidy

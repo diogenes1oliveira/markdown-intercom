@@ -1,0 +1,19 @@
+{
+    "cookiecutter": {
+        "full_name": "Diógenes Oliveira",
+        "github_username": "diogenes1oliveira",
+        "app_name": "mdintercom",
+        "project_short_description": "Safely reset your git repo status",
+        "docker_hub_username": "diogenes1oliveira",
+        "docker_image": "",
+        "docker_build_image": "",
+        "docker_build_image_version": "1.13",
+        "go_mod_or_dep": "mod",
+        "use_docker": "y",
+        "use_git": "y",
+        "use_logrus_logging": "y",
+        "use_viper_config": "y",
+        "use_cobra_cmd": "y",
+        "use_ci": "none"
+    }
+}
