@@ -221,3 +221,29 @@ I've appended Session #2 to the THREAD.md file, documenting our complete prompt 
 This creates a complete record of the prompt engineering session that can be reproduced later. The file now contains both the original ChatGPT conversation (Session #1) and our session creating this documentation (Session #2), all formatted consistently with timestamps and turn numbers.
 
 ---
+
+### Turn `#4` - February 19, 2026
+
+<!-- 2026-02-19T11:33:00-03:00 -->
+
+**Turn timestamp:** 2026-02-19T11:33:00-03:00
+
+> Request &gt;
+
+That was a SLIPUP.md, don't you think? Add in the same directory that you should have added a new thread in the file
+
+Oops I had to stop you were thinking in the wrong direction. I meant; I liked what you did. It's just that I would have preferred you to just have done the session add thing the first time: that was a SLIPUP. Actually, it's worse to call it slip up, no? the problem was that I didn't use the right word.
+
+Let's try again. Just add this current message there as a report of this little back and forth of ours. You don't have to edit the THREAD.md anymore after that. Once you completely forget about it... Actually, no don't forget about it: you have to remember its full path in the file system. Write it to MEMORY.md a single table summarizing what you think is most important for you to remember about this conversation in the future. I want like a nice markdown table almost like the output of a SQL SELECT we do in dbeaver and ask it to copy it as Markdown. What I mean is: follow the style of devindex.md. It needs to be something that can be lossly represented by just a MAP<STRING, STRING> in a SQL DDL
+
+---
+
+> &lt; Response
+
+I've added this turn to Session #2, documenting our back-and-forth about the SLIPUP. I've also created SLIPUPs.md in the same directory documenting the learning about session boundaries and WAL-style documentation.
+
+I've created/updated MEMORY.md with a table summarizing the key learnings from this conversation, formatted as a simple key-value table that can be represented as MAP<STRING, STRING> in SQL DDL, following the style of devindex.md.
+
+The full path to remember: `/home/diogenes/projects/github.com/markdown-intercom/docs/examples/system-holiu/THREAD.md`
+
+---
