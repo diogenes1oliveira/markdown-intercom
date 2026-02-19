@@ -3,7 +3,7 @@
 ## Not Adding Session Documentation from the Start
 
 **What happened:**  
-When the user requested to create a THREAD.md file documenting a ChatGPT conversation, the agent created Session #1 correctly. However, when the user later asked to "add my prompt and summarize your response there in the same file", the agent misunderstood and added Turn #3 to Session #1 instead of recognizing that the user wanted the current Cursor agent session documented as a separate Session #2.
+When the user requested to create a THREADS.md file documenting a ChatGPT conversation, the agent created Session #1 correctly. However, when the user later asked to "add my prompt and summarize your response there in the same file", the agent misunderstood and added Turn #3 to Session #1 instead of recognizing that the user wanted the current Cursor agent session documented as a separate Session #2.
 
 **What should have been done:**
 
@@ -14,9 +14,9 @@ When the user requested to create a THREAD.md file documenting a ChatGPT convers
 
 **Fix applied:**
 
-- Added Session #2 to THREAD.md documenting the complete Cursor agent session
+- Added Session #2 to THREADS.md documenting the complete Cursor agent session
 - Included all three turns: initial request, clarification request, and session documentation request
 - Maintained WAL-style append-only format
 
 **Lesson:**  
-When documenting conversations in THREAD.md format, recognize session boundaries. Each distinct conversation context (different agents, different tools, different time periods) should be its own Session #N. When in doubt about whether to add a new session or modify existing content, prefer creating a new session (WAL style). The user's actual issue was unclear wording, not a mistake by the agent—but better to ask for clarification than to guess.
+When documenting conversations in THREADS.md format, recognize session boundaries. Each distinct conversation context (different agents, different tools, different time periods) should be its own Session #N. When in doubt about whether to add a new session or modify existing content, prefer creating a new session (WAL style). The user's actual issue was unclear wording, not a mistake by the agent—but better to ask for clarification than to guess.
