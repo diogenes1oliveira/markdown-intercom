@@ -6,7 +6,7 @@ usage() {
   cat <<EOF
 Usage: ${BASH_SOURCE[0]} [OPTIONS]
 
-Sets up the IDE environment.
+Sets up the IDE environments.
 
 Options:
   --dry-run               Don't actually install, just print the command [\$DEV_DRY_RUN]
@@ -15,7 +15,7 @@ Options:
   -h, --help              Show this help message and exit
 
 Environment Variables:
-  \$DEV_IDE_COMMANDS       IDE commands to use, comma separated
+  \$DEV_IDES               IDE commands to use, comma separated
   \$DEV_ADHOC_VSIX_URLS    URL of a .vsix extension to override the marketplace, comma separated
 EOF
 }
@@ -62,7 +62,7 @@ install_shfmt() (
 install_extensions_from_vsix_urls() (
   local IFS=,
   local urls=($DEV_ADHOC_VSIX_URLS)
-  local commands=($DEV_IDE_COMMANDS)
+  local commands=($DEV_IDES)
 
   for url in "${urls[@]}"; do
     local fname="$url"
@@ -136,7 +136,7 @@ usage_error() {
 }
 
 print_vars() {
-  for varname in DEV_DRY_RUN DEV_NO_ENVFILE DEV_IDE_COMMANDS DEV_ADHOC_VSIX_URLS TMPDIR REPO_BIN; do
+  for varname in DEV_DRY_RUN DEV_NO_ENVFILE DEV_IDES DEV_ADHOC_VSIX_URLS TMPDIR REPO_BIN; do
     printf >&2 '$ export %s=%q\n' "$varname" "${!varname:-}"
   done
 }
@@ -198,14 +198,14 @@ set_vars() {
   REPO_BIN="${REPO_ROOT}/.venv/bin"
 
   DEV_DRY_RUN="${dry_run:-${DEV_DRY_RUN:-}}"
-  DEV_IDE_COMMANDS="${DEV_IDE_COMMANDS:-code}"
+  DEV_IDES="${DEV_IDES:-code}"
   DEV_ADHOC_VSIX_URLS="${DEV_ADHOC_VSIX_URLS:-}"
 
   emptify DEV_DRY_RUN
   emptify VERBOSE
-  require_var DEV_IDE_COMMANDS
+  require_var DEV_IDES
 
-  export DEV_DRY_RUN DEV_IDE_COMMANDS DEV_ADHOC_VSIX_URLS DEV_NO_ENVFILE REPO_BIN REPO_ROOT
+  export DEV_DRY_RUN DEV_IDES DEV_ADHOC_VSIX_URLS DEV_NO_ENVFILE REPO_BIN REPO_ROOT
 }
 
 prepare_tmpdir() {

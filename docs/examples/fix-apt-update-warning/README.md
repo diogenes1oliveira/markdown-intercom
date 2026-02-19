@@ -4,10 +4,10 @@ Example conversation demonstrating the markdown-intercom protocol for fixing apt
 
 ## Hive-like Table Structures
 
-- [Messages Table](messages/index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/messages/index.md) - Messages organized by turn
-- [Inbox Table](inbox/index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/index.md) - Inbox messages index
+- [Messages Table](messages/devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/messages/devindex.md) - Messages organized by turn
+- [Inbox Table](inbox/devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/devindex.md) - Inbox messages index
 
-See [`index.md`](index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/index.md) for the complete index.
+See [`devindex.md`](devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/devindex.md) for the complete index.
 
 ## Contents
 

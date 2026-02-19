@@ -5,7 +5,7 @@ This document describes the structure and purpose of files in this example.
 ## Main Documentation
 
 - [`README.md`](README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/README.md) - User-friendly overview of the example with links to hive-like table structures and main contents
-- [`index.md`](index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/index.md) - Technical index table listing all markdown files with relative and GitHub paths
+- [`devindex.md`](devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/devindex.md) - Technical index table listing all markdown files with relative and GitHub paths
 
 ## Protocol and Agent Documentation
 
@@ -23,14 +23,14 @@ This document describes the structure and purpose of files in this example.
 ### Messages Directory
 
 - [`messages/README.md`](messages/README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/messages/README.md) - User-friendly overview of the messages directory
-- [`messages/index.md`](messages/index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/messages/index.md) - Technical table of all messages organized by turn
+- [`messages/devindex.md`](messages/devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/messages/devindex.md) - Technical table of all messages organized by turn
 
 ### Turn Directories
 
 Each turn directory (`turn=1/`, `turn=2/`, `turn=3/`) contains:
 
 - `README.md` - User-friendly overview with links to messages
-- `index.md` - Technical table listing messages in that turn
+- `devindex.md` - Technical table listing messages in that turn
 - `a.user.00N.md` - User message files (verbatim from THREAD.md)
 - `b.bot.00N.md` - Bot message files (verbatim from THREAD.md)
 
@@ -39,7 +39,7 @@ Each turn directory (`turn=1/`, `turn=2/`, `turn=3/`) contains:
 ### Inbox Directory
 
 - [`inbox/README.md`](inbox/README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/README.md) - Overview of the inbox example
-- [`inbox/index.md`](inbox/index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/index.md) - Technical table of inbox messages
+- [`inbox/devindex.md`](inbox/devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/devindex.md) - Technical table of inbox messages
 - [`inbox/main.md`](inbox/main.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/main.md) - Simulated inbox state showing the append-only write-ahead log format
 
 ### Drafts Directory

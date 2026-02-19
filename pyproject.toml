@@ -10,8 +10,9 @@ requires-python = ">=3.9"
 
 dependencies = [
   "mdx-outline",
-  "mkdocs>=1.6.1",
+  "mkdocs>=1.6.1,<2.0",  # Pin to 1.x series (MkDocs 2.0 incompatible with Material)
   "mkdocs-gen-files>=0.6.0",
+  "mkdocs-htmlproofer-plugin>=0.0.3",  # Check for broken links and fail build
   "mkdocs-material>=9.7.1",
   "mkdocs-section-index>=0.3.10",
   "pathspec>=0.12.0",
@@ -31,7 +32,12 @@ mdx-outline = { git = "https://github.com/diogenes1oliveira/mdx_outline.git" }
 [dependency-groups]
 dev = [
   "mypy>=1.18.2",
+  "pytest>=8.4.2",
+  "pytest-asyncio>=1.2.0",
+  "pytest-cov>=7.0.0",
+  "pytest-mock>=3.15.1",
   "ruff>=0.14.5",
+  "rust-just>=1.46.0",
 ]
 
 [tool.mypy]
@@ -53,6 +59,8 @@ disable_error_code = ["comparison-overlap", "type-abstract"]
 [tool.ruff]
 target-version = "py39"
 line-length = 120
+
+[tool.ruff.lint]
 select = [
   "E",  # pycodestyle errors
   "W",  # pycodestyle warnings
@@ -67,5 +75,10 @@ ignore = [
   "B008", # do not perform function calls in argument defaults
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "--doctest-modules --ignore=var/ --ignore=.dev/ --ignore=tmp/ --ignore=.direnv/"

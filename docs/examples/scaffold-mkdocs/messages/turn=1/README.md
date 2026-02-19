@@ -2,7 +2,7 @@
 
 Messages from Turn #1 of the conversation.
 
-See [`index.md`](index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/messages/turn=1/index.md) for the message index table.
+See [`devindex.md`](devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/messages/turn=1/devindex.md) for the message index table.
 
 ## Messages
 

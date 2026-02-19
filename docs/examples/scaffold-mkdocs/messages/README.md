@@ -2,7 +2,7 @@
 
 Individual messages organized by turn with hive-style partitioning.
 
-See [`index.md`](index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/messages/index.md) for the complete message index table.
+See [`devindex.md`](devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/messages/devindex.md) for the complete message index table.
 
 ## Structure
 

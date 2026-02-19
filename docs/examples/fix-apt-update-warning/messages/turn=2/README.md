@@ -2,7 +2,7 @@
 
 Messages from Turn #2 of the conversation.
 
-See [`index.md`](index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/messages/turn=2/index.md) for the message index table.
+See [`devindex.md`](devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/messages/turn=2/devindex.md) for the message index table.
 
 ## Messages
 

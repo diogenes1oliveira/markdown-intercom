@@ -16,5 +16,6 @@
     "charliermarsh.ruff",
     "mkhl.shfmt",
     "redhat.vscode-yaml",
+    "github.vscode-github-actions",
   ]
 }

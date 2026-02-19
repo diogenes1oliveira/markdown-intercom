@@ -1,0 +1,38 @@
+name: Deploy site/ to GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Check site/ directory exists
+        run: |
+          if [ ! -d "site" ]; then
+            echo "Error: site/ directory not found. Please build the site first with 'just build' or 'uv run mkdocs build'"
+            exit 1
+          fi
+          echo "Found site/ directory with $(find site -type f | wc -l) files"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

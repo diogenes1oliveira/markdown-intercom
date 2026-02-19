@@ -5,17 +5,29 @@ site_url: https://diogenes1oliveira.github.io/markdown-intercom/
 
 nav:
   - Home: index.md
+  - Index: devindex.md
+  - Agents: AGENTS.md
   - Architecture: ARCHITECTURE.md
+  - Development: DEVELOPMENT.md
+  - CI Tests: CI.md
   - Examples:
-      - Index: examples/index.md
-      - Fix Apt Update Warning: examples/fix-apt-update-warning/README.md
-      - Scaffold MkDocs: examples/scaffold-mkdocs/README.md
+      - Index: examples/devindex.md
+      - Fix Apt Update Warning:
+          - README: examples/fix-apt-update-warning/README.md
+          - Index: examples/fix-apt-update-warning/devindex.md
+          - AGENTS: examples/fix-apt-update-warning/AGENTS.md
+      - Scaffold MkDocs:
+          - README: examples/scaffold-mkdocs/README.md
+          - Index: examples/scaffold-mkdocs/devindex.md
 
 plugins:
   - search
   - section-index
   - privacy
   - tags
+  - htmlproofer:
+      enabled: !ENV [CI, false]
+      raise_error: true  # Fail build on broken links
   - gen-files:
       scripts:
         - src/mkdocs_customize/gen_pages.py

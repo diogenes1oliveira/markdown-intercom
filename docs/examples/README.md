@@ -2,7 +2,7 @@
 
 Example implementations demonstrating the markdown-intercom protocol.
 
-## Examples
+## Index
 
 - [Fix Apt Update Warning](fix-apt-update-warning/README.md) - Example conversation fixing apt sources.list configuration
 - [Scaffold MkDocs](scaffold-mkdocs/README.md) - Scaffolding an mkdocs website to demo the thread of fixing apt sources list error

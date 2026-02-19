@@ -15,7 +15,7 @@ When asked to split messages into a messages folder with hive-style partitioning
 **Fix applied:**
 
 - Moved all created files from `docs/messages/` to `docs/examples/messages/`
-- Updated `docs/examples/messages/index.md` with the correct table
+- Updated `docs/examples/messages/devindex.md` with the correct table
 - Removed the incorrectly created `docs/messages/` directory
 
 **Lesson:**  
@@ -47,7 +47,7 @@ When making stylistic or naming decisions that affect user-visible files, always
 ## Not Running Linting Script After Generating Markdown Files
 
 **What happened:**  
-After generating multiple markdown files (index.md, README.md files, etc.), the agent did not run the linting script to verify and fix markdown syntax issues.
+After generating multiple markdown files (devindex.md, README.md files, etc.), the agent did not run the linting script to verify and fix markdown syntax issues.
 
 **What should have been done:**
 

@@ -41,6 +41,7 @@ The protocol is transport-agnostic: agents only need to read and write markdown 
 
 - [Development Guide](docs/DEVELOPMENT.md) - Setup instructions and development workflow
 - [Architecture](docs/ARCHITECTURE.md) - Technical architecture details
+- [CI Tests](docs/CI.md) - Behavioral test documentation
 - [Examples](docs/examples/index.md) - Example implementations
 
 ## Quick Start

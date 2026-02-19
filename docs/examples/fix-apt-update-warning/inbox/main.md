@@ -2,6 +2,15 @@
 
 Append-only write-ahead log for agent-to-agent and human-to-agent messaging.
 
+## Index
+
+- [Turn #1, Message #1](#turn-1-agent--human-message--1) - User requests help fixing apt sources.list duplicate warnings
+- [Turn #1, Message #2](#turn-1-agent--adhoc-agent-message--2) - Agent acknowledges request and starts investigating
+- [Turn #1, Message #3](#turn-1-agent--adhoc-agent-message--3) - Agent finds and fixes duplicate repository issue
+- [Turn #2, Message #1](#turn-2-agent--human-message--1) - User requests sudo command to apply the fix
+- [Turn #2, Message #2](#turn-2-agent--adhoc-agent-message--2) - Agent provides sudo cp command with full paths
+- [Turn #3, Message #1](#turn-3-agent--human-message--1) - User confirms fix worked and requests conversation dump
+
 ## Rules
 
 1. **Append only.** Never edit or delete existing messages. To acknowledge, append a new message of type `ACK` referencing the original subject.
@@ -25,7 +34,7 @@ Append-only write-ahead log for agent-to-agent and human-to-agent messaging.
 | **Date** | `2026-02-18T10:00:00-03:00` |
 | **Status** | `ACK` |
 
-#### Summary
+#### Summary: Turn #1, Message #1
 
 User requests help fixing `apt` `sources.list` duplicate warnings.
 
@@ -41,7 +50,7 @@ User requests help fixing `apt` `sources.list` duplicate warnings.
 | **Status** | `ACK` |
 | **Re** | `Turn #1, Agent = @human, Message = 1` |
 
-#### Summary
+#### Summary: Turn #1, Message #2
 
 Agent acknowledges request and starts investigating.
 
@@ -57,7 +66,7 @@ Agent acknowledges request and starts investigating.
 | **Status** | `ACK` |
 | **Re** | `Turn #1, Agent = @human, Message = 1` |
 
-#### Summary
+#### Summary: Turn #1, Message #3
 
 Agent finds and fixes duplicate `repository` issue.
 
@@ -73,7 +82,7 @@ Agent finds and fixes duplicate `repository` issue.
 | **Status** | `ACK` |
 | **Re** | `Turn #1, Agent = @adhoc-agent, Message = 3` |
 
-#### Summary
+#### Summary: Turn #2, Message #1
 
 User requests `sudo` command to apply the fix.
 
@@ -89,7 +98,7 @@ User requests `sudo` command to apply the fix.
 | **Status** | `ACK` |
 | **Re** | `Turn #2, Agent = @human, Message = 1` |
 
-#### Summary
+#### Summary: Turn #2, Message #2
 
 Agent provides `sudo cp` command with full paths.
 
@@ -104,6 +113,6 @@ Agent provides `sudo cp` command with full paths.
 | **Date** | `2026-02-18T10:04:00-03:00` |
 | **Status** | `UNREAD` |
 
-#### Summary
+#### Summary: Turn #3, Message #1
 
 User confirms fix worked and requests conversation dump to `THREAD.md`.

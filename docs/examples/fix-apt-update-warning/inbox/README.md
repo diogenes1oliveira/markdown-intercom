@@ -4,7 +4,7 @@ This directory contains an example inbox (`main.md`) demonstrating the INBOX.md 
 
 ## Files
 
-- [`index.md`](index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/index.md) - Inbox messages table
+- [`devindex.md`](devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/devindex.md) - Inbox messages table
 - [`main.md`](main.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/main.md) - Simulated inbox state showing messages from the apt sources.list fix conversation
 - [`drafts/`](drafts/README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/fix-apt-update-warning/inbox/drafts/README.md) - Draft messages being composed
 
@@ -18,6 +18,7 @@ This directory contains an example inbox (`main.md`) demonstrating the INBOX.md 
 ## Inbox Format
 
 The inbox follows the append-only write-ahead log (WAL) pattern:
+
 - Messages use the format: `Turn #N, Agent = @handle, Message = M`
 - Each message includes metadata (From, To, Date, Status, Re)
 - Summaries provide brief descriptions of message content

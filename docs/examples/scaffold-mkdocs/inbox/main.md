@@ -2,6 +2,13 @@
 
 Append-only write-ahead log for agent-to-agent and human-to-agent messaging.
 
+## Index
+
+- [Turn #1, Message #1](#turn-1-agent--human-message--1) - User requests scaffolding of mkdocs website to demonstrate thread conversation
+- [Turn #1, Message #2](#turn-1-agent--doc-agent-message--2) - Agent creates initial structure and documentation files
+- [Turn #2, Message #1](#turn-2-agent--human-message--1) - User requests complete structure replication from fix-apt-update-warning example
+- [Turn #2, Message #2](#turn-2-agent--doc-agent-message--2) - Agent replicates complete structure including messages, inbox, and all root files
+
 ## Rules
 
 1. **Append only.** Never edit or delete existing messages. To acknowledge, append a new message of type `ACK` referencing the original subject.
@@ -25,7 +32,7 @@ Append-only write-ahead log for agent-to-agent and human-to-agent messaging.
 | **Date** | `2026-02-18T12:50:00-03:00` |
 | **Status** | `ACK` |
 
-#### Summary
+#### Summary: Turn #1, Message #1
 
 User requests scaffolding of mkdocs website to demonstrate thread conversation.
 
@@ -41,7 +48,7 @@ User requests scaffolding of mkdocs website to demonstrate thread conversation.
 | **Status** | `ACK` |
 | **Re** | `Turn #1, Agent = @human, Message = 1` |
 
-#### Summary
+#### Summary: Turn #1, Message #2
 
 Agent creates initial structure and documentation files.
 
@@ -57,7 +64,7 @@ Agent creates initial structure and documentation files.
 | **Status** | `ACK` |
 | **Re** | `Turn #1, Agent = @doc-agent, Message = 2` |
 
-#### Summary
+#### Summary: Turn #2, Message #1
 
 User requests complete structure replication from fix-apt-update-warning example.
 
@@ -73,6 +80,6 @@ User requests complete structure replication from fix-apt-update-warning example
 | **Status** | `ACK` |
 | **Re** | `Turn #2, Agent = @human, Message = 1` |
 
-#### Summary
+#### Summary: Turn #2, Message #2
 
 Agent replicates complete structure including messages, inbox, and all root files.

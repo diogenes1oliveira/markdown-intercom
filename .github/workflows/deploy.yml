@@ -23,7 +23,7 @@ jobs:
         with:
           enable-cache: true
           version: "latest"
-          python-version: "3.9"
+          python-version: "3.12"
 
       - name: Install just
         uses: extractions/setup-just@v2

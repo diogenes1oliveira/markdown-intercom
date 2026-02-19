@@ -1,24 +1,33 @@
 #!/usr/bin/env python3
 
 """
-Lint YAML and Markdown files, or build and check mkdocs site.
-Usage: lint.py --format markdown|yaml|docs [--fix] [--any] <glob1> <glob2> ...
+Lint YAML, Markdown, Python files, or build and check mkdocs site.
+Usage: lint.py --format markdown|yaml|docs|python:mypy|python:ruff [--fix] [--any] <glob1> <glob2> ...
 """
 
 import argparse
-import glob
 import os
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import List, Set
+from typing import List, Optional, Set
 
 import pathspec
 
 
 def log(level: str, message: str) -> None:
-    """Log a message with timestamp and emoji."""
+    """
+    Log a message with timestamp and emoji prefix.
+    
+    Args:
+        level: Log level (INFO, WARN, ERROR, SUCCESS, DEBUG)
+        message: Message to log
+        
+    Behavior:
+        Prints formatted message to stdout with timestamp and emoji.
+        Format: "YYYY-MM-DD HH:MM:SS LEVEL - emoji message"
+    """
     import datetime
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     emojis = {
@@ -33,7 +42,19 @@ def log(level: str, message: str) -> None:
 
 
 def find_repo_root(start_dir: Path) -> Path:
-    """Find repo root by looking for .markdownlint.json."""
+    """
+    Find repository root directory by searching for .markdownlint.json marker file.
+    
+    Args:
+        start_dir: Starting directory to search from
+        
+    Returns:
+        Path to repository root, or start_dir if not found
+        
+    Behavior:
+        Walks up directory tree from start_dir until finding .markdownlint.json.
+        Returns the directory containing that file, or start_dir if never found.
+    """
     current = start_dir.resolve()
     while current != current.parent:
         if (current / '.markdownlint.json').exists():
@@ -43,7 +64,20 @@ def find_repo_root(start_dir: Path) -> Path:
 
 
 def load_markdownlint_ignore(repo_root: Path) -> pathspec.PathSpec:
-    """Load ignore patterns from .markdownlintignore file."""
+    """
+    Load ignore patterns from .markdownlintignore file using pathspec library.
+    
+    Args:
+        repo_root: Repository root directory
+        
+    Returns:
+        pathspec.PathSpec object with gitwildmatch patterns, empty if file doesn't exist
+        
+    Behavior:
+        Reads .markdownlintignore from repo_root, filters out comments and empty lines,
+        and returns a PathSpec configured for gitwildmatch pattern matching.
+        Returns empty PathSpec if file doesn't exist.
+    """
     ignore_file = repo_root / '.markdownlintignore'
     if not ignore_file.exists():
         return pathspec.PathSpec.from_lines('gitwildmatch', [])
@@ -55,7 +89,22 @@ def load_markdownlint_ignore(repo_root: Path) -> pathspec.PathSpec:
 
 
 def should_ignore_file(file_path: Path, ignore_spec: pathspec.PathSpec, repo_root: Path) -> bool:
-    """Check if a file should be ignored based on ignore patterns."""
+    """
+    Check if a file matches ignore patterns using pathspec library.
+    
+    Args:
+        file_path: Absolute path to file to check
+        ignore_spec: pathspec.PathSpec with ignore patterns
+        repo_root: Repository root directory
+        
+    Returns:
+        True if file should be ignored, False otherwise
+        
+    Behavior:
+        Converts file_path to relative path from repo_root, normalizes separators,
+        and uses pathspec.match_file() to check if it matches any ignore pattern.
+        Returns False if ignore_spec is empty or file is outside repo_root.
+    """
     if not ignore_spec or not ignore_spec.patterns:
         return False
     
@@ -72,7 +121,20 @@ def should_ignore_file(file_path: Path, ignore_spec: pathspec.PathSpec, repo_roo
 
 
 def expand_globs_with_git(globs: List[str]) -> Set[Path]:
-    """Expand globs using git ls-files (only tracked files)."""
+    """
+    Expand glob patterns to matching tracked files using git ls-files.
+    
+    Args:
+        globs: List of glob patterns (e.g., ["*.md", "docs/**/*.yml"])
+        
+    Returns:
+        Set of Path objects for matching tracked files
+        
+    Behavior:
+        Runs 'git ls-files' to get all tracked files, then matches them against
+        glob patterns using fnmatch and regex (for ** patterns). Falls back to
+        expand_globs_with_find() if git is unavailable or repo has no tracked files.
+    """
     files = set()
     
     try:
@@ -133,7 +195,19 @@ def expand_globs_with_git(globs: List[str]) -> Set[Path]:
 
 
 def expand_globs_with_find(globs: List[str]) -> Set[Path]:
-    """Expand globs using Python's glob module (includes all files)."""
+    """
+    Expand glob patterns to matching files using Python's glob module (includes all files).
+    
+    Args:
+        globs: List of glob patterns (e.g., ["*.md", "docs/**/*.yml"])
+        
+    Returns:
+        Set of Path objects for matching files
+        
+    Behavior:
+        Uses Path.rglob() for ** patterns and Path.glob() for simple patterns.
+        Searches from current directory, includes gitignored files.
+    """
     files = set()
     
     for glob_pattern in globs:
@@ -157,8 +231,24 @@ def expand_globs_with_find(globs: List[str]) -> Set[Path]:
     return files
 
 
-def run_markdown_lint(file_path: Path, fix: bool, repo_root: Path, ignore_spec: pathspec.PathSpec = None) -> bool:
-    """Run markdownlint on a file."""
+def run_markdown_lint(file_path: Path, fix: bool, repo_root: Path, ignore_spec: Optional[pathspec.PathSpec] = None) -> bool:
+    """
+    Run markdownlint-cli on a single markdown file.
+    
+    Args:
+        file_path: Path to markdown file to lint
+        fix: If True, attempt to auto-fix issues
+        repo_root: Repository root directory (for config file lookup)
+        ignore_spec: Optional pathspec for ignore patterns
+        
+    Returns:
+        True if linting passed or file was ignored, False on error
+        
+    Behavior:
+        Checks ignore_spec first; if file matches, returns True without linting.
+        Loads .markdownlint.json config if present. Runs npx markdownlint-cli
+        with --fix flag if requested. Prints output and returns False on non-zero exit.
+    """
     # Check if file should be ignored
     if ignore_spec and should_ignore_file(file_path, ignore_spec, repo_root):
         log('INFO', f'Skipping ignored file: {file_path}')
@@ -191,7 +281,19 @@ def run_markdown_lint(file_path: Path, fix: bool, repo_root: Path, ignore_spec: 
 
 
 def run_yaml_lint(file_path: Path) -> bool:
-    """Run yamllint on a file."""
+    """
+    Run yamllint on a single YAML file.
+    
+    Args:
+        file_path: Path to YAML file to lint
+        
+    Returns:
+        True if linting passed, False on error
+        
+    Behavior:
+        Tries system yamllint first, falls back to npx yaml-lint if not found.
+        Uses 'standard' format. Prints output and returns False on non-zero exit.
+    """
     log('INFO', f'Linting YAML: {file_path}')
     
     # Try system yamllint first
@@ -229,8 +331,103 @@ def run_yaml_lint(file_path: Path) -> bool:
             return False
 
 
-def lint_file(file_path: Path, format_type: str, fix: bool, repo_root: Path, ignore_spec: pathspec.PathSpec = None) -> bool:
-    """Lint a single file."""
+def run_mypy_lint(file_path: Path, repo_root: Path) -> bool:
+    """
+    Run mypy type checker on a single Python file.
+    
+    Args:
+        file_path: Path to Python file to type check
+        repo_root: Repository root directory (for config lookup)
+        
+    Returns:
+        True if type checking passed, False on error
+        
+    Behavior:
+        Runs 'uv run mypy' on the file, using mypy configuration from pyproject.toml.
+        Prints output and returns False on non-zero exit or if mypy not found.
+    """
+    log('INFO', f'Type checking with mypy: {file_path}')
+    
+    try:
+        result = subprocess.run(
+            ['uv', 'run', 'mypy', str(file_path)],
+            cwd=str(repo_root),
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0:
+            return True
+        if result.stdout:
+            print(result.stdout, end='')
+        if result.stderr:
+            print(result.stderr, end='', file=sys.stderr)
+        return False
+    except FileNotFoundError:
+        log('ERROR', 'uv not found. Please install uv: https://github.com/astral-sh/uv')
+        return False
+
+
+def run_ruff_lint(file_path: Path, fix: bool, repo_root: Path) -> bool:
+    """
+    Run ruff linter on a single Python file.
+    
+    Args:
+        file_path: Path to Python file to lint
+        fix: If True, attempt to auto-fix issues
+        repo_root: Repository root directory (for config lookup)
+        
+    Returns:
+        True if linting passed, False on error
+        
+    Behavior:
+        Runs 'uv run ruff check' (or 'ruff check --fix' if fix=True) on the file,
+        using ruff configuration from pyproject.toml. Prints output and returns
+        False on non-zero exit or if ruff not found.
+    """
+    log('INFO', f'Linting with ruff: {file_path}')
+    
+    try:
+        cmd = ['uv', 'run', 'ruff', 'check']
+        if fix:
+            cmd.append('--fix')
+        cmd.append(str(file_path))
+        
+        result = subprocess.run(
+            cmd,
+            cwd=str(repo_root),
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0:
+            return True
+        if result.stdout:
+            print(result.stdout, end='')
+        if result.stderr:
+            print(result.stderr, end='', file=sys.stderr)
+        return False
+    except FileNotFoundError:
+        log('ERROR', 'uv not found. Please install uv: https://github.com/astral-sh/uv')
+        return False
+
+
+def lint_file(file_path: Path, format_type: str, fix: bool, repo_root: Path, ignore_spec: Optional[pathspec.PathSpec] = None) -> bool:
+    """
+    Lint a single file based on format type.
+    
+    Args:
+        file_path: Path to file to lint
+        format_type: Format type ('markdown', 'yaml', 'python:mypy', 'python:ruff')
+        fix: If True, attempt to auto-fix issues (markdown and ruff only)
+        repo_root: Repository root directory
+        ignore_spec: Optional pathspec for ignore patterns (markdown only)
+        
+    Returns:
+        True if linting passed, False on error or invalid format
+        
+    Behavior:
+        Validates file exists, then delegates to appropriate linter function
+        based on format_type. Returns False if file doesn't exist or format is invalid.
+    """
     if not file_path.is_file():
         log('ERROR', f'File not found: {file_path}')
         return False
@@ -239,13 +436,30 @@ def lint_file(file_path: Path, format_type: str, fix: bool, repo_root: Path, ign
         return run_markdown_lint(file_path, fix, repo_root, ignore_spec)
     elif format_type == 'yaml':
         return run_yaml_lint(file_path)
+    elif format_type == 'python:mypy':
+        return run_mypy_lint(file_path, repo_root)
+    elif format_type == 'python:ruff':
+        return run_ruff_lint(file_path, fix, repo_root)
     else:
         log('ERROR', f'Invalid format: {format_type}')
         return False
 
 
 def run_docs_lint(repo_root: Path) -> bool:
-    """Build mkdocs site and check for errors (missing links, navs, etc.)."""
+    """
+    Build mkdocs site to temporary directory and check for errors.
+    
+    Args:
+        repo_root: Repository root directory
+        
+    Returns:
+        True if build succeeded with no errors, False otherwise
+        
+    Behavior:
+        Creates temporary directory, runs 'uv run mkdocs build' with 5-minute timeout,
+        checks output for warnings/errors (missing links, nav items, etc.).
+        Returns False if mkdocs.yml missing, build fails, or errors detected in output.
+    """
     log('INFO', 'Building mkdocs site to check for errors...')
     
     # Create temporary directory for build output
@@ -326,7 +540,7 @@ def run_docs_lint(repo_root: Path) -> bool:
             return False
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description='Lint YAML or Markdown files matching glob patterns.',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -336,6 +550,9 @@ Examples:
   lint.py --format markdown --fix "docs/**/*.md"
   lint.py --format yaml "*.yml" "*.yaml"
   lint.py --format markdown --any "*.md"  # Include gitignored files
+  lint.py --format python:mypy "**/*.py"  # Type check Python files
+  lint.py --format python:ruff "**/*.py"  # Lint Python files
+  lint.py --format python:ruff --fix "**/*.py"  # Lint and fix Python files
   lint.py --format docs  # Build and check mkdocs site
         """
     )
@@ -343,8 +560,8 @@ Examples:
     parser.add_argument(
         '--format',
         required=True,
-        choices=['markdown', 'yaml', 'docs'],
-        help='File format to lint (markdown/yaml) or docs to build and check mkdocs site'
+        choices=['markdown', 'yaml', 'docs', 'python:mypy', 'python:ruff'],
+        help='File format to lint (markdown/yaml/python:mypy/python:ruff) or docs to build and check mkdocs site'
     )
     parser.add_argument(
         '--fix',
@@ -383,9 +600,11 @@ Examples:
             log('WARN', 'Glob patterns not used for docs format, ignoring')
         return 0 if run_docs_lint(repo_root) else 1
     
-    # Handle markdown/yaml formats
+    # Handle markdown/yaml/python formats
     if args.fix and args.format == 'yaml':
         log('WARN', 'YAML fix not implemented, only checking')
+    if args.fix and args.format == 'python:mypy':
+        log('WARN', 'mypy fix not implemented, only checking')
     
     if not args.globs:
         log('ERROR', 'At least one glob pattern required for markdown/yaml format')
@@ -401,7 +620,7 @@ Examples:
         log('WARN', f'No files found matching glob patterns: {", ".join(args.globs)}')
         return 0
     
-    # Load ignore patterns if needed
+    # Load ignore patterns if needed (only for markdown)
     ignore_spec = None
     if args.format == 'markdown':
         ignore_spec = load_markdownlint_ignore(repo_root)

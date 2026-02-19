@@ -4,7 +4,7 @@ This directory contains an example inbox (`main.md`) demonstrating the INBOX.md 
 
 ## Files
 
-- [`index.md`](index.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/inbox/index.md) - Inbox messages table
+- [`devindex.md`](devindex.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/inbox/devindex.md) - Inbox messages table
 - [`main.md`](main.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/inbox/main.md) - Simulated inbox state showing messages from the scaffold-mkdocs conversation
 - [`drafts/`](drafts/README.md) / [GitHub](https://github.com/diogenes1oliveira/markdown-intercom/blob/main/docs/examples/scaffold-mkdocs/inbox/drafts/README.md) - Draft messages being composed
 

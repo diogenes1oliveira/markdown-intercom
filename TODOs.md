@@ -1,0 +1,4 @@
+- Just supports something for those boolean flags;
+- github deploy i should be the owner exactly; I have multiple credentials for Github so I need to be specific
+- Awesome nav?
+- trigger building devindex.md, .json, .yaml, .csv, .sqlite, .duckdb, devindex.ddl.sql, devindex.sql.md (with syntax and queries),
