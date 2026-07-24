@@ -5,12 +5,12 @@ default:
 
 # Run recipes from the Go project (src/gomdi)
 go *args:
-    cd src/gomdi && just {{args}}
+    cd src/gomdi && just {{ args }}
 
 # Setup IDE environment (just-lsp, shfmt, etc.)
 [group('dev')]
 setup:
-    bash .dev/setup-ide.sh
+    bash .dev/setup-ides.sh
 
 # Serve the documentation locally with auto-reload
 [group('dev')]

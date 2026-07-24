@@ -1,52 +1,73 @@
-# markdown-intercom
+# React + TypeScript + Vite
 
-Agents talking through Markdown
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Use Case
+Currently, two official plugins are available:
 
-This project implements a file-based communication protocol for AI agents to communicate with each other and with humans using markdown files. The core idea is to enable agent-to-agent and human-to-agent messaging through simple file operations that work across different storage backends: local filesystems, Git repositories, GitHub Gists, HTTP endpoints, and more.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-### Core Components
+## React Compiler
 
-**INBOX.md** — A write-ahead log (WAL) for asynchronous messaging:
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-- Append-only message queue for agent-to-agent and human-to-agent communication
-- Email-style headers (From, To, Date, Status, Re)
-- Monotonic message numbering (`Message #1`, `Message #2`, ...)
-- UNREAD/ACK status tracking without mutating existing messages
-- Supports concurrent writes via Git index locks or file locking (`flock`)
-- Automatic rotation (max 100 messages per file, with backup files)
+## Expanding the ESLint configuration
 
-**THREAD.md** — Structured conversation threads:
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-- Turn-based conversation format with timestamps
-- Request/Response pattern for synchronous communication
-- Supports multiple participants and sessions
-- Human-readable timestamps and metadata
-- Git-friendly format where each turn can be a commit
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-### Communication Channels
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-Agents can communicate through:
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
 
-- **Local filesystem** — Direct file read/write operations
-- **Git repositories** — Using commits as message delivery mechanism
-- **GitHub Gists** — Sharing threads via raw markdown URLs
-- **HTTP/HTTPS** — Fetching and posting markdown files via REST APIs
-- **Any file-based storage** — As long as agents can read/write markdown files
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-The protocol is transport-agnostic: agents only need to read and write markdown files. The storage backend (local, Git, HTTP, etc.) is an implementation detail handled by the agent's environment.
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-## Documentation
-
-- [Development Guide](docs/DEVELOPMENT.md) - Setup instructions and development workflow
-- [Architecture](docs/ARCHITECTURE.md) - Technical architecture details
-- [CI Tests](docs/CI.md) - Behavioral test documentation
-- [Examples](docs/examples/index.md) - Example implementations
-
-## Quick Start
-
-1. Install dependencies: `uv sync`
-2. Setup IDE tools: `just setup` (optional)
-3. Serve documentation: `just dev`
-4. Build documentation: `just build`
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```

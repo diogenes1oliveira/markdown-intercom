@@ -1,5 +1,3 @@
-# Human Agent Drafts
-
 Draft messages from `@human`.
 
 ## Turns

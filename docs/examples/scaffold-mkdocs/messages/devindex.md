@@ -1,4 +1,4 @@
-| Turn | Agent | Message Index | File |
+| Turn | Agent | Message Index | File                                         |
 | :--- | :---- | :------------ | :------------------------------------------- |
 | 1    | user  | 001           | [turn=1/a.user.001.md](turn=1/a.user.001.md) |
 | 1    | bot   | 001           | [turn=1/b.bot.001.md](turn=1/b.bot.001.md)   |
